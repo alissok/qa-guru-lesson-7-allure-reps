@@ -4,6 +4,7 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.logevents.SelenideLogger;
 import io.qameta.allure.selenide.AllureSelenide;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
@@ -19,13 +20,17 @@ public class IssuesSearchTest {
             issueName = "I am test issue";
     SelenideElement repinput = $(".header-search-input");
 
+    @BeforeAll
+    static void addLogger() {
+        SelenideLogger.addListener("allure", new AllureSelenide());
+    }
+
     @Test
     void searchIssueWithLogger() {
-        SelenideLogger.addListener("allure", new AllureSelenide());
         open(url);
 
         repinput.click();
-        repinput.sendKeys(repository);
+        repinput.setValue(repository);
         repinput.submit();
 
         $(By.linkText(repository)).click();
@@ -35,13 +40,12 @@ public class IssuesSearchTest {
 
     @Test
     void searchIssueWithLambdaSteps() {
-        SelenideLogger.addListener("allure", new AllureSelenide());
         step("Открываем главную страницу GitHub", () -> {
             open(url);
         });
         step("Ищем репозиторий " + repository + " по ссылке", () -> {
             repinput.click();
-            repinput.sendKeys(repository);
+            repinput.setValue(repository);
             repinput.submit();
         });
         step("Переходим по ссылке на искомый репозиторий " + repository, () -> {
@@ -57,7 +61,6 @@ public class IssuesSearchTest {
 
     @Test
     void searchIssueStepsAnnotaton() {
-        SelenideLogger.addListener("allure", new AllureSelenide());
         WebSteps steps = new WebSteps();
 
         steps.openMainPage(url);
